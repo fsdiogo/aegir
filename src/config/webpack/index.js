@@ -26,15 +26,26 @@ function webpackConfig (env) {
       environment.TEST_BROWSER_JS = JSON.stringify('')
     }
     const sourcemap = env === 'test' ? 'inline-source-map' : 'source-map'
+    const babelOptions = require(path.join(__dirname, '../babelrc.js'))
 
     return merge(base, {
       entry: [
         entry
       ],
       devtool: sourcemap,
+      module: {
+        rules: [{
+          test: /\.js$/,
+          // FIXME - this is commented for now so all the libs get transpiled
+          // exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: babelOptions
+        }]
+      },
       output: {
         filename: path.basename(entry),
         library: libraryName,
+        libraryTarget: 'umd',
         path: utils.getPathToDist()
       },
       plugins: [
